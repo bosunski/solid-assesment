@@ -2,14 +2,30 @@
 
 namespace Language;
 
+use Language\LanguageBatch;
+use Language\Results;
+
 class LanguageFiles
 {
+
+	public function __construct(Results $results, LanguageCache $languageCache)
+	{
+		$this->results = $results;
+		$this->languageCache = $languageCache;
+	}
+
+	/**
+	 * Contains the applications which ones require translations.
+	 *
+	 * @var array
+	 */
+	public static $applications = array();
+
 
     public function generateLanguageFiles()
     {
         // The applications where we need to translate.
 		self::$applications = Config::get('system.translated_applications');
-
 		echo "\nGenerating language files\n";
 		foreach (self::$applications as $application => $languages) {
 			echo "[APPLICATION: " . $application . "]\n";
@@ -25,7 +41,7 @@ class LanguageFiles
 		}
 	}
 	
-	public static function getLanguageFile($application, $language)
+	public function getLanguageFile($application, $language)
 	{
 		$result = false;
 		$languageResponse = ApiCall::call(
@@ -39,21 +55,21 @@ class LanguageFiles
 		);
 
 		try {
-			self::checkForApiErrorResult($languageResponse);
+			$this->results->checkForApiErrorResult($languageResponse);
 		}
 		catch (\Exception $e) {
 			throw new \Exception('Error during getting language file: (' . $application . '/' . $language . ')');
 		}
 
 		// If we got correct data we store it.
-		$destination = self::getLanguageCachePath($application) . $language . '.php';
+		$destination = $this->languageCache->getLanguageCachePath($application) . $language . '.php';
 		// If there is no folder yet, we'll create it.
 		var_dump($destination);
 		if (!is_dir(dirname($destination))) {
 			mkdir(dirname($destination), 0755, true);
 		}
 
-		$result = file_put_contents($destination, $languageResponse['data']);
+		$result = $this->results->getResult($destination, $languageResponse);
 
 		return (bool)$result;
 	}

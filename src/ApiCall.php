@@ -7,9 +7,9 @@ use Language\FormatAsResult;
 class ApiCall
 {
 
-	public function __construct(FormatAsResult $formatAsResult)
+	public function __construct(Results $results)
 	{
-		$this->formatAsResult = $formatAsResult;
+		$this->results = $results;
 	}
 
 	const GET_LANGUAGE_FILE_RESULT = "<?php
@@ -45,8 +45,11 @@ class ApiCall
 		}
 	}
 
-	private static function formatAsResult($data)
+	public static function formatAsResult($data)
 	{
-		return $this->formatAsResult;
+		return [
+			'status' => 'OK',
+			'data'   => $data,
+		];
 	}
 }

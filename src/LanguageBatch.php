@@ -2,43 +2,39 @@
 
 namespace Language;
 
-use Language\GenerateLanguageFiles;
-use Language\GetLanguageFile;
-use Language\GenerateAppletLanguageXmlFiles;
-use Language\GetAppletLanguages;
-use Language\GetAppletLanguageFile;
+use Language\LanguageFiles;
+use Language\AppletLanguages;
 use Language\CheckResult;
+use Language\LanguageCache;
 
 /**
  * Business logic related to generating language files.
  */
 class LanguageBatch
 {
-	public function __construct(LanguageFiles $languageFiles, GenerateAppletLanguageXmlFiles $generateAppletLanguageXmlFiles,
-								GetAppletLanguages $getAppletLanguages, GetAppletLanguageFile $getAppletLanguageFile,
-								CheckResult $checkResult)
+	public function __construct(LanguageFiles $languageFiles, AppletLanguages $appletLanguages,
+								Results $results, LanguageCache $languageCache)
 	{
 		$this->languageFiles = $languageFiles;
-		$this->getLanguageFile = $getLanguageFile;
-		$this->generateAppletLanguageXmlFiles = $generateAppletLanguageXmlFiles;
-		$this->getAppletLanguages = $getAppletLanguages;
-		$this->getAppletLanguageFile = $getAppletLanguageFile;
-		$this->checkResult = $checkResult;
+		$this->appletLanguages= $appletLanguages;
+		$this->results = $results;
+		$this->languageCache = $languageCache;
 	}
 	/**
 	 * Contains the applications which ones require translations.
 	 *
 	 * @var array
 	 */
-	protected static $applications = array();
+	public static $applications = array();
 
 	/**
 	 * Starts the language file generation.
 	 *
 	 * @return void
 	 */
-	public static function generateLanguageFiles()
+	public function generateLanguageFiles()
 	{
+		// var_dump($x);die;
 		return $this->languageFiles->generateLanguageFiles();
 	}
 
@@ -66,7 +62,7 @@ class LanguageBatch
 	 */
 	protected static function getLanguageCachePath($application)
 	{
-		return Config::get('system.paths.root') . '/cache/' . $application. '/';
+		return $this->languageCache->getLanguageCachePath($application);
 	}
 
 	/**
@@ -76,9 +72,9 @@ class LanguageBatch
 	 *
 	 * @return void
 	 */
-	public static function generateAppletLanguageXmlFiles()
+	public function generateAppletLanguageXmlFiles()
 	{
-		return $this->generateAppletLanguageXmlFiles->generateAppletLanguageXmlFiles();
+		return $this->appletLanguages->generateAppletLanguageXmlFiles();
 	}
 
 	/**
@@ -90,7 +86,7 @@ class LanguageBatch
 	 */
 	protected static function getAppletLanguages($applet)
 	{
-		return $this->getAppletLanguages->getAppletLanguages($applet);
+		return $this->appletLanguages->getAppletLanguages($applet);
 	}
 
 
@@ -104,7 +100,7 @@ class LanguageBatch
 	 */
 	protected static function getAppletLanguageFile($applet, $language)
 	{
-		return $this->getAppletLanguageFile->getAppletLanguageFile($applet, $language);
+		return $this->appletLanguages->getAppletLanguageFile($applet, $language);
 	}
 
 	/**
@@ -118,6 +114,6 @@ class LanguageBatch
 	 */
 	protected static function checkForApiErrorResult($result)
 	{
-		return $this->checkResult->checkForApiErrorResult($result);
+		return $this->results->checkForApiErrorResult($result);
 	}
 }
