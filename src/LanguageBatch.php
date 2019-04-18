@@ -6,20 +6,24 @@ use Language\GenerateLanguageFiles;
 use Language\GetLanguageFile;
 use Language\GenerateAppletLanguageXmlFiles;
 use Language\GetAppletLanguages;
+use Language\GetAppletLanguageFile;
+use Language\CheckResult;
 
 /**
  * Business logic related to generating language files.
  */
 class LanguageBatch
 {
-	public function __construct(GenerateLanguageFiles $generateLanguageFiles, GetLanguageFile $getLanguageFile,
-								GenerateAppletLanguageXmlFiles $generateAppletLanguageXmlFiles,
-								GetAppletLanguages $getAppletLanguages)
+	public function __construct(LanguageFiles $languageFiles, GenerateAppletLanguageXmlFiles $generateAppletLanguageXmlFiles,
+								GetAppletLanguages $getAppletLanguages, GetAppletLanguageFile $getAppletLanguageFile,
+								CheckResult $checkResult)
 	{
-		$this->generateLanguageFiles = $generateLanguageFiles;
+		$this->languageFiles = $languageFiles;
 		$this->getLanguageFile = $getLanguageFile;
 		$this->generateAppletLanguageXmlFiles = $generateAppletLanguageXmlFiles;
 		$this->getAppletLanguages = $getAppletLanguages;
+		$this->getAppletLanguageFile = $getAppletLanguageFile;
+		$this->checkResult = $checkResult;
 	}
 	/**
 	 * Contains the applications which ones require translations.
@@ -35,7 +39,7 @@ class LanguageBatch
 	 */
 	public static function generateLanguageFiles()
 	{
-		return $this->generateLanguageFiles;
+		return $this->languageFiles->generateLanguageFiles();
 	}
 
 	/**
@@ -50,7 +54,7 @@ class LanguageBatch
 	 */
 	protected static function getLanguageFile($application, $language)
 	{
-		return $this->getLanguageFile;
+		return $this->languageFiles->getLanguageFile($application, $language);
 	}
 
 	/**
@@ -74,7 +78,7 @@ class LanguageBatch
 	 */
 	public static function generateAppletLanguageXmlFiles()
 	{
-		return $this->generateAppletLanguageXmlFiles;
+		return $this->generateAppletLanguageXmlFiles->generateAppletLanguageXmlFiles();
 	}
 
 	/**
@@ -86,7 +90,7 @@ class LanguageBatch
 	 */
 	protected static function getAppletLanguages($applet)
 	{
-		return $this->getAppletLanguages($applet);
+		return $this->getAppletLanguages->getAppletLanguages($applet);
 	}
 
 
@@ -100,28 +104,7 @@ class LanguageBatch
 	 */
 	protected static function getAppletLanguageFile($applet, $language)
 	{
-		$result = ApiCall::call(
-			'system_api',
-			'language_api',
-			array(
-				'system' => 'LanguageFiles',
-				'action' => 'getAppletLanguageFile'
-			),
-			array(
-				'applet' => $applet,
-				'language' => $language
-			)
-		);
-
-		try {
-			self::checkForApiErrorResult($result);
-		}
-		catch (\Exception $e) {
-			throw new \Exception('Getting language xml for applet: (' . $applet . ') on language: (' . $language . ') was unsuccessful: '
-				. $e->getMessage());
-		}
-
-		return $result['data'];
+		return $this->getAppletLanguageFile->getAppletLanguageFile($applet, $language);
 	}
 
 	/**
@@ -135,20 +118,6 @@ class LanguageBatch
 	 */
 	protected static function checkForApiErrorResult($result)
 	{
-		// Error during the api call.
-		if ($result === false || !isset($result['status'])) {
-			throw new \Exception('Error during the api call');
-		}
-		// Wrong response.
-		if ($result['status'] != 'OK') {
-			throw new \Exception('Wrong response: '
-				. (!empty($result['error_type']) ? 'Type(' . $result['error_type'] . ') ' : '')
-				. (!empty($result['error_code']) ? 'Code(' . $result['error_code'] . ') ' : '')
-				. ((string)$result['data']));
-		}
-		// Wrong content.
-		if ($result['data'] === false) {
-			throw new \Exception('Wrong content!');
-		}
+		return $this->checkResult->checkForApiErrorResult($result);
 	}
 }
