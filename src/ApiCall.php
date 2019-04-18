@@ -2,8 +2,16 @@
 
 namespace Language;
 
+use Language\FormatAsResult;
+
 class ApiCall
 {
+
+	public function __construct(FormatAsResult $formatAsResult)
+	{
+		$this->formatAsResult = $formatAsResult;
+	}
+
 	const GET_LANGUAGE_FILE_RESULT = "<?php
 		return array (
 			'Models' => 'User Model',
@@ -39,9 +47,6 @@ class ApiCall
 
 	private static function formatAsResult($data)
 	{
-		return [
-			'status' => 'OK',
-			'data'   => $data,
-		];
+		return $this->formatAsResult;
 	}
 }
