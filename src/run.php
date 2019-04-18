@@ -4,6 +4,8 @@ chdir(__DIR__);
 
 include('../vendor/autoload.php');
 
-$languageBatchBo = new \Language\LanguageBatch();
-$languageBatchBo->generateLanguageFiles();
-$languageBatchBo->generateAppletLanguageXmlFiles();
+use Language\Applet;
+use Language\LanguageBatch;
+
+LanguageBatch::generateLanguageFiles();
+Applet::generateLanguageXmlFiles();
