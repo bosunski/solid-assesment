@@ -19,20 +19,30 @@ class AppletLanguages
 
 		echo "\nGetting applet language XMLs..\n";
 
-		foreach ($applets as $appletDirectory => $appletLanguageId) {
+		foreach ($applets as $appletDirectory => $appletLanguageId) 
+		{
 			echo " Getting > $appletLanguageId ($appletDirectory) language xmls..\n";
+
 			$languages = $this->getAppletLanguages($appletLanguageId);
-			if (empty($languages)) {
+
+			if (empty($languages)) 
+			{
 				throw new \Exception('There is no available languages for the ' . $appletLanguageId . ' applet.');
 			}
 			else {
 				echo ' - Available languages: ' . implode(', ', $languages) . "\n";
 			}
+
 			$path = Config::get('system.paths.root') . '/cache/flash';
-			foreach ($languages as $language) {
+
+			foreach ($languages as $language) 
+			{
 				$xmlContent = self::getAppletLanguageFile($appletLanguageId, $language);
+
 				$xmlFile    = $path . '/lang_' . $language . '.xml';
-				if (strlen($xmlContent) == file_put_contents($xmlFile, $xmlContent)) {
+
+				if (strlen($xmlContent) == file_put_contents($xmlFile, $xmlContent)) 
+				{
 					echo " OK saving $xmlFile was successful.\n";
 				}
 				else {
@@ -59,10 +69,12 @@ class AppletLanguages
 			array('applet' => $applet)
 		);
 
-		try {
+		try 
+		{
 			$this->results->checkForApiErrorResult($result);
 		}
-		catch (\Exception $e) {
+		catch (\Exception $e) 
+		{
 			throw new \Exception('Getting languages for applet (' . $applet . ') was unsuccessful ' . $e->getMessage());
 		}
 
