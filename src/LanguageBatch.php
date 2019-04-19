@@ -2,11 +2,6 @@
 
 namespace Language;
 
-use Language\LanguageFiles;
-use Language\AppletLanguages;
-use Language\CheckResult;
-use Language\LanguageCache;
-
 /**
  * Business logic related to generating language files.
  */

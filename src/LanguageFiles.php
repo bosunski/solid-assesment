@@ -2,9 +2,6 @@
 
 namespace Language;
 
-use Language\LanguageBatch;
-use Language\Results;
-
 class LanguageFiles
 {
 
@@ -44,15 +41,8 @@ class LanguageFiles
 	public function getLanguageFile($application, $language)
 	{
 		$result = false;
-		$languageResponse = ApiCall::call(
-			'system_api',
-			'language_api',
-			array(
-				'system' => 'LanguageFiles',
-				'action' => 'getLanguageFile'
-			),
-			array('language' => $language)
-		);
+
+		$languageResponse = $this->languageResponse($language);
 
 		try {
 			$this->results->checkForApiErrorResult($languageResponse);
@@ -72,6 +62,19 @@ class LanguageFiles
 		$result = $this->results->getResult($destination, $languageResponse);
 
 		return (bool)$result;
+	}
+
+	protected function languageResponse($language)
+	{
+		return ApiCall::call(
+			'system_api',
+			'language_api',
+			array(
+				'system' => 'LanguageFiles',
+				'action' => 'getLanguageFile'
+			),
+			array('language' => $language)
+		);
 	}
 
 }
