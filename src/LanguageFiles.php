@@ -5,10 +5,11 @@ namespace Language;
 class LanguageFiles
 {
 
-	public function __construct(Results $results, LanguageCache $languageCache)
+	public function __construct(Results $results, LanguageCache $languageCache, LanguageResponse $languageResponse)
 	{
 		$this->results = $results;
 		$this->languageCache = $languageCache;
+		$this->languageResponse = $languageResponse;
 	}
 
 	/**
@@ -66,15 +67,7 @@ class LanguageFiles
 
 	protected function languageResponse($language)
 	{
-		return ApiCall::call(
-			'system_api',
-			'language_api',
-			array(
-				'system' => 'LanguageFiles',
-				'action' => 'getLanguageFile'
-			),
-			array('language' => $language)
-		);
+		return $this->languageResponse->languageResponse($language);
 	}
 
 }
