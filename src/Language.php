@@ -2,31 +2,28 @@
 
 namespace Language;
 
-use \Language\Validators\ValidateAPI;
+use \Language\Validators\API;
 
 
 class Language
 {
+
     public static function getFile($application, $language)
 	{
 		$result = false;
-		$languageResponse = ApiCall::call(
-			'system_api',
-			'language_api',
-			array(
-				'system' => 'LanguageFiles',
-				'action' => 'getLanguageFile'
-			),
-			array('language' => $language)
-		);
 
 		try {
-			ValidateAPI::checkForApiErrorResult($languageResponse);
+			API::checkForErrorResult(self::callLanguageApi($language));
 		}
 		catch (\Exception $e) {
 			throw new \Exception('Error during getting language file: (' . $application . '/' . $language . ')');
 		}
 
+		return (bool) self::storeLanguageData($application, $language);
+	}
+
+	public function storeLanguageData($application, $language)
+	{
 		// If we got correct data we store it.
 		$destination = Cache::getLanguageCachePath($application) . $language . '.php';
 		// If there is no folder yet, we'll create it.
@@ -35,8 +32,19 @@ class Language
 			mkdir(dirname($destination), 0755, true);
 		}
 
-		$result = file_put_contents($destination, $languageResponse['data']);
+		return file_put_contents($destination, self::callLanguageApi($language)['data']);
+	}
 
-		return (bool)$result;
+	public static function callLanguageApi($language)
+	{
+		return ApiCall::call(
+			'system_api',
+			'language_api',
+			array(
+				'system' => 'LanguageFiles',
+				'action' => 'getLanguageFile'
+			),
+			array('language' => $language)
+		);	
 	}
 }
