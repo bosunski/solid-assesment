@@ -37,7 +37,7 @@ class LanguageBatch
 	 */
 	protected static function getLanguageFile($application, $language)
 	{
-		return $this->languageFiles->getLanguageFile($application, $language);
+		return LanguageFiles::getLanguageFile($application, $language);
 	}
 
 	/**
@@ -49,7 +49,7 @@ class LanguageBatch
 	 */
 	protected static function getLanguageCachePath($application)
 	{
-		return $this->languageCache->getLanguageCachePath($application);
+		return LanguageCache::getLanguageCachePath($application);
 	}
 
 	/**
@@ -73,7 +73,7 @@ class LanguageBatch
 	 */
 	protected static function getAppletLanguages($applet)
 	{
-		return $this->appletLanguages->getAppletLanguages($applet);
+		return AppletLanguages::getAppletLanguages($applet);
 	}
 
 
@@ -87,7 +87,7 @@ class LanguageBatch
 	 */
 	protected static function getAppletLanguageFile($applet, $language)
 	{
-		return $this->appletLanguages->getAppletLanguageFile($applet, $language);
+		return AppletLanguages::getAppletLanguageFile($applet, $language);
 	}
 
 	/**
@@ -101,6 +101,6 @@ class LanguageBatch
 	 */
 	protected static function checkForApiErrorResult($result)
 	{
-		return $this->results->checkForApiErrorResult($result);
+		return Results::checkForApiErrorResult($result);
 	}
 }
