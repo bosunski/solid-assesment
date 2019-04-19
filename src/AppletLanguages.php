@@ -5,12 +5,7 @@ namespace Language;
 class AppletLanguages
 {
 
-	public function __construct(Results $results)
-	{
-		$this->results = $results;
-	}
-
-    public function generateAppletLanguageXmlFiles()
+    public static function generateAppletLanguageXmlFiles()
 	{
 		// List of the applets [directory => applet_id].
 		$applets = array(
@@ -23,7 +18,7 @@ class AppletLanguages
 		{
 			echo " Getting > $appletLanguageId ($appletDirectory) language xmls..\n";
 
-			$languages = $this->getAppletLanguages($appletLanguageId);
+			$languages = self::getAppletLanguages($appletLanguageId);
 
 			if (empty($languages)) 
 			{
@@ -57,7 +52,7 @@ class AppletLanguages
 	}
 
 
-	public function getAppletLanguages($applet)
+	public static function getAppletLanguages($applet)
 	{
 		$result = ApiCall::call(
 			'system_api',
@@ -71,7 +66,7 @@ class AppletLanguages
 
 		try 
 		{
-			$this->results->checkForApiErrorResult($result);
+			Results::checkForApiErrorResult($result);
 		}
 		catch (\Exception $e) 
 		{
@@ -82,7 +77,7 @@ class AppletLanguages
 	}
 
 
-	protected function getAppletLanguageFile($applet, $language)
+	protected static function getAppletLanguageFile($applet, $language)
 	{
 		$result = ApiCall::call(
 			'system_api',
@@ -98,7 +93,7 @@ class AppletLanguages
 		);
 
 		try {
-			$this->results->checkForApiErrorResult($result);
+			Results::checkForApiErrorResult($result);
 		}
 		catch (\Exception $e) {
 			throw new \Exception('Getting language xml for applet: (' . $applet . ') on language: (' . $language . ') was unsuccessful: '

@@ -25,7 +25,7 @@ class Results
 	}
 
 
-	public function getResult($destination, $languageResponse)
+	public static function getResult($destination, $languageResponse)
 	{
 		return file_put_contents($destination, $languageResponse['data']);
 	}

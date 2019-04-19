@@ -7,14 +7,6 @@ namespace Language;
  */
 class LanguageBatch
 {
-	public function __construct(LanguageFiles $languageFiles, AppletLanguages $appletLanguages,
-								Results $results, LanguageCache $languageCache)
-	{
-		$this->languageFiles = $languageFiles;
-		$this->appletLanguages= $appletLanguages;
-		$this->results = $results;
-		$this->languageCache = $languageCache;
-	}
 	/**
 	 * Contains the applications which ones require translations.
 	 *
@@ -27,10 +19,10 @@ class LanguageBatch
 	 *
 	 * @return void
 	 */
-	public function generateLanguageFiles()
+	public static function generateLanguageFiles()
 	{
 		// var_dump($x);die;
-		return $this->languageFiles->generateLanguageFiles();
+		return LanguageFiles::generateLanguageFiles();
 	}
 
 	/**
@@ -67,9 +59,9 @@ class LanguageBatch
 	 *
 	 * @return void
 	 */
-	public function generateAppletLanguageXmlFiles()
+	public static function generateAppletLanguageXmlFiles()
 	{
-		return $this->appletLanguages->generateAppletLanguageXmlFiles();
+		return AppletLanguages::generateAppletLanguageXmlFiles();
 	}
 
 	/**

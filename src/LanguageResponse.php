@@ -4,7 +4,7 @@ namespace Language;
 
 class LanguageResponse
 {
-    public function languageResponse($language)
+    public static function languageResponse($language)
     {
         return ApiCall::call(
 			'system_api',
