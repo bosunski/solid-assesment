@@ -1,9 +1,14 @@
 <?php
 
+namespace language;
+
+use Language\LanguageBatch;
+
 chdir(__DIR__);
 
 include('../vendor/autoload.php');
 
-$languageBatchBo = new \Language\LanguageBatch();
-$languageBatchBo->generateLanguageFiles();
-$languageBatchBo->generateAppletLanguageXmlFiles();
+LanguageBatch::generateLanguageFiles();
+LanguageBatch::generateAppletLanguageXmlFiles();
+
+
