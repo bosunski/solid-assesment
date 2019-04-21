@@ -14,39 +14,7 @@ class AppletLanguages
 
 		echo "\nGetting applet language XMLs..\n";
 
-		foreach ($applets as $appletDirectory => $appletLanguageId) 
-		{
-			echo " Getting > $appletLanguageId ($appletDirectory) language xmls..\n";
-
-			$languages = self::getAppletLanguages($appletLanguageId);
-
-			if (empty($languages)) 
-			{
-				throw new \Exception('There is no available languages for the ' . $appletLanguageId . ' applet.');
-			}
-			else {
-				echo ' - Available languages: ' . implode(', ', $languages) . "\n";
-			}
-
-			$path = Config::get('system.paths.root') . '/cache/flash';
-
-			foreach ($languages as $language) 
-			{
-				$xmlContent = self::getAppletLanguageFile($appletLanguageId, $language);
-
-				$xmlFile    = $path . '/lang_' . $language . '.xml';
-
-				if (strlen($xmlContent) == file_put_contents($xmlFile, $xmlContent)) 
-				{
-					echo " OK saving $xmlFile was successful.\n";
-				}
-				else {
-					throw new \Exception('Unable to save applet: (' . $appletLanguageId . ') language: (' . $language
-						. ') xml (' . $xmlFile . ')!');
-				}
-			}
-			echo " < $appletLanguageId ($appletDirectory) language xml cached.\n";
-		}
+		self::appletsLoop($applets);
 
 		echo "\nApplet language XMLs generated.\n";
 	}
@@ -54,24 +22,9 @@ class AppletLanguages
 
 	public static function getAppletLanguages($applet)
 	{
-		$result = ApiCall::call(
-			'system_api',
-			'language_api',
-			array(
-				'system' => 'LanguageFiles',
-				'action' => 'getAppletLanguages'
-			),
-			array('applet' => $applet)
-		);
+		$result = Response::appletLanguageResponse('getAppletLanguages', 'en', $applet);
 
-		try 
-		{
-			Results::checkForApiErrorResult($result);
-		}
-		catch (\Exception $e) 
-		{
-			throw new \Exception('Getting languages for applet (' . $applet . ') was unsuccessful ' . $e->getMessage());
-		}
+		Validator\Validator::validateResult($result, 'Getting languages for applet was unsuccessful');
 
 		return $result['data'];
 	}
@@ -79,27 +32,48 @@ class AppletLanguages
 
 	protected static function getAppletLanguageFile($applet, $language)
 	{
-		$result = ApiCall::call(
-			'system_api',
-			'language_api',
-			array(
-				'system' => 'LanguageFiles',
-				'action' => 'getAppletLanguageFile'
-			),
-			array(
-				'applet' => $applet,
-				'language' => $language
-			)
-		);
+		$result = Response::appletLanguageResponse('getAppletLanguageFile', $language, $applet);
 
-		try {
-			Results::checkForApiErrorResult($result);
-		}
-		catch (\Exception $e) {
-			throw new \Exception('Getting language xml for applet: (' . $applet . ') on language: (' . $language . ') was unsuccessful: '
-				. $e->getMessage());
-		}
+		Validator\Validator::validateResult($result, 'Getting language xml for applet was unsuccessful:');
 
 		return $result['data'];
+	}
+
+
+	protected static function languageLoop($languages, $appletLanguageId, $path)
+	{
+		foreach ($languages as $language) 
+		{
+			$xmlContent = self::getAppletLanguageFile($appletLanguageId, $language);
+
+			$xmlFile = self::path($path, $language);
+
+			Validator\Validator::validateXmlContent($xmlContent, $xmlFile, 'Unable to save applet language!');
+		}
+	}
+
+
+	public static function appletsLoop($applets)
+	{
+		foreach ($applets as $appletDirectory => $appletLanguageId) 
+		{
+			echo " Getting > $appletLanguageId ($appletDirectory) language xmls..\n";
+
+			$languages = self::getAppletLanguages($appletLanguageId);
+
+			Validator\validator::validateLanguages($languages);
+
+			$path = Config::get('system.paths.root') . '/cache/flash';
+
+			self::languageLoop($languages, $appletLanguageId, $path);
+			
+			echo " < $appletLanguageId ($appletDirectory) language xml cached.\n";
+		}
+	}
+
+
+	protected static function path($path, $language)
+	{
+		return $path . '/lang_' . $language . '.xml';
 	}
 }

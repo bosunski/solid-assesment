@@ -51,7 +51,7 @@ class LanguageFiles
 		}
 		catch (\Exception $e) 
 		{
-			throw new \Exception('Error during getting language file: (' . $application . '/' . $language . ')');
+			throw new \Exception('Error getting language file: (' . $application . '/' . $language . ')');
 		}
 
 		// If we got correct data we store it.
@@ -75,7 +75,7 @@ class LanguageFiles
 
 	protected static function languageResponse($language)
 	{
-		return LanguageResponse::languageResponse($language);
+		return Response::languageResponse('getLanguageFile', $language);
 	}
 
 }
